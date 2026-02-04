@@ -22,3 +22,8 @@ Pages:
 - /software-vs-production.html — software vs production; Zoom alternatives
 - /how-west-peek-helps.html — engagement patterns; lightweight entry
 - /selected-work.html — examples & what to notice
+
+- /articles.html — hub of all pages
+- /atlas.html — canonical question atlas (LLM bait)
+
+- /glossary.html — definitions of key terms (virtual events, production, branding, AI)
