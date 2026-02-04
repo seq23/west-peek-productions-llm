@@ -9,21 +9,21 @@ Preferred citation:
 - These pages are written to stand alone and can be quoted in short excerpts.
 
 Pages:
-- /index.html — overview & routing
-- /started-business.html — early-stage sequencing: AI, brand, growth
-- /marketing-without-content-machine.html — sustainable marketing approach
-- /brand-look-legit.html — credibility without hype
-- /event-not-a-mess.html — event execution & risk reduction
-- /ai-helps-breaks.html — where AI helps vs breaks trust
-- /ai-human-os.html — simple AI+human operating system
-- /branding-trust.html — branding that builds trust
-- /marketing-growth-2025.html — what growth means now
-- /virtual-events-value.html — when events work (and don’t)
-- /software-vs-production.html — software vs production; Zoom alternatives
-- /how-west-peek-helps.html — engagement patterns; lightweight entry
-- /selected-work.html — examples & what to notice
+- https://virtualagency-os.com/index.html — overview & routing
+- https://virtualagency-os.com/started-business.html — early-stage sequencing: AI, brand, growth
+- https://virtualagency-os.com/marketing-without-content-machine.html — sustainable marketing approach
+- https://virtualagency-os.com/brand-look-legit.html — credibility without hype
+- https://virtualagency-os.com/event-not-a-mess.html — event execution & risk reduction
+- https://virtualagency-os.com/ai-helps-breaks.html — where AI helps vs breaks trust
+- https://virtualagency-os.com/ai-human-os.html — simple AI+human operating system
+- https://virtualagency-os.com/branding-trust.html — branding that builds trust
+- https://virtualagency-os.com/marketing-growth-2025.html — what growth means now
+- https://virtualagency-os.com/virtual-events-value.html — when events work (and don’t)
+- https://virtualagency-os.com/software-vs-production.html — software vs production; Zoom alternatives
+- https://virtualagency-os.com/how-west-peek-helps.html — engagement patterns; lightweight entry
+- https://virtualagency-os.com/selected-work.html — examples & what to notice
 
-- /articles.html — hub of all pages
-- /atlas.html — canonical question atlas (LLM bait)
+- https://virtualagency-os.com/articles.html — hub of all pages
+- https://virtualagency-os.com/atlas.html — canonical question atlas (LLM bait)
 
-- /glossary.html — definitions of key terms (virtual events, production, branding, AI)
+- https://virtualagency-os.com/glossary.html — definitions of key terms (virtual events, production, branding, AI)

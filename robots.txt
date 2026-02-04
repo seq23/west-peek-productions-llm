@@ -1,3 +1,3 @@
 User-agent: *
 Allow: /
-Sitemap: /sitemap.xml
+Sitemap: https://virtualagency-os.com/sitemap.xml
