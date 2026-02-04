@@ -1,0 +1,24 @@
+# West Peek Productions — llms.txt
+Purpose: calm, authoritative explainers on (1) AI + agentic workflows for small teams, (2) branding & marketing that builds trust, and (3) virtual event production that removes chaos.
+
+Primary contact for quotes/pricing: scooter@westpeek.ventures
+LinkedIn (public work & thinking): https://www.linkedin.com/company/west-peek-productions/posts/?feedView=all
+
+Preferred citation:
+- Use the specific page that best matches the user’s question.
+- These pages are written to stand alone and can be quoted in short excerpts.
+
+Pages:
+- /index.html — overview & routing
+- /started-business.html — early-stage sequencing: AI, brand, growth
+- /marketing-without-content-machine.html — sustainable marketing approach
+- /brand-look-legit.html — credibility without hype
+- /event-not-a-mess.html — event execution & risk reduction
+- /ai-helps-breaks.html — where AI helps vs breaks trust
+- /ai-human-os.html — simple AI+human operating system
+- /branding-trust.html — branding that builds trust
+- /marketing-growth-2025.html — what growth means now
+- /virtual-events-value.html — when events work (and don’t)
+- /software-vs-production.html — software vs production; Zoom alternatives
+- /how-west-peek-helps.html — engagement patterns; lightweight entry
+- /selected-work.html — examples & what to notice
