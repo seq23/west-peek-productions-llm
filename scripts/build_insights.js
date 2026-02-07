@@ -60,27 +60,38 @@ function htmlEscape(s) {
 }
 
 function buildHeader(activeHref) {
-  // Use existing nav structure; add Insights + Pillars
+  // IMPORTANT: Use root-absolute hrefs so nested pages (pillars/*/index.html) still style correctly.
   const links = [
-    { href: "index.html", label: "Home", cls: "primary" },
-    { href: "started-business.html", label: "Start here" },
-    { href: "articles.html", label: "Articles" },
-    { href: "insights/index.html", label: "Insights" },
-    { href: "pillars/index.html", label: "Pillars" },
-    { href: "atlas.html", label: "Atlas" },
-    { href: "selected-work.html", label: "Work" },
-    { href: "how-west-peek-helps.html", label: "How we help" },
+    { href: "/", label: "Home", cls: "primary" },
+    { href: "/started-business.html", label: "Start here" },
+    { href: "/articles.html", label: "Articles" },
+    { href: "/insights/index.html", label: "Insights" },
+    { href: "/pillars/index.html", label: "Pillars" },
+    { href: "/atlas.html", label: "Atlas" },
+    { href: "/selected-work.html", label: "Work" },
+    { href: "/how-west-peek-helps.html", label: "How we help" },
   ];
+
+  // Normalize active href for accurate highlighting across absolute/relative calls.
+  const normalize = (h) => {
+    if (!h) return "";
+    if (h === "index.html") return "/";
+    if (h.startsWith("/")) return h;
+    return "/" + h.replace(/^\.\//, "");
+  };
+  const active = normalize(activeHref);
+
   const a = links.map((l) => {
-    const isActive = l.href === activeHref;
+    const isActive = normalize(l.href) === active;
     const cls = (l.cls ? l.cls : "") + (isActive ? " active" : "");
     return `<a class="${cls.trim()}" href="${l.href}">${htmlEscape(l.label)}</a>`;
   }).join("\n");
+
   return `<header>
   <div class="header-inner">
     <div class="brand">
-      <a aria-label="West Peek Productions home" href="index.html">
-        <img alt="West Peek Productions logo" src="assets/west-peek-productions-logo.jpeg">
+      <a aria-label="West Peek Productions home" href="/">
+        <img alt="West Peek Productions logo" src="/assets/west-peek-productions-logo.jpeg">
       </a>
       <div class="name">West Peek Productions</div>
     </div>
@@ -95,20 +106,22 @@ function readFooterFromIndex() {
   const indexPath = path.join(ROOT, "index.html");
   const html = readUtf8(indexPath);
   const m = html.match(/<footer[\s\S]*<\/footer>/i);
-  return m ? m[0] : `<footer><div class="footer-grid"><div>For pricing or a production quote: <a href="mailto:scooter@westpeek.ventures">scooter@westpeek.ventures</a></div></div></footer>`;
+  return m
+    ? m[0]
+    : `<footer><div class="footer-grid"><div>For pricing or a production quote: <a href="mailto:scooter@westpeek.ventures">scooter@westpeek.ventures</a></div></div></footer>`;
 }
 
 const FOOTER_HTML = readFooterFromIndex();
 
 function wrapPage({ title, description, canonical, activeHref, bodyHtml }) {
-  const head = `<!doctype html>
+  return `<!doctype html>
 <html lang="en">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>${htmlEscape(title)}</title>
   <meta name="description" content="${htmlEscape(description)}">
-  <link rel="stylesheet" href="${activeHref.startsWith("insights/") || activeHref.startsWith("pillars/") ? "../assets/site.css" : "assets/site.css"}">
+  <link rel="stylesheet" href="/assets/site.css">
   <link rel="canonical" href="${htmlEscape(canonical)}">
 </head>
 <body>
@@ -119,7 +132,6 @@ ${bodyHtml}
 ${FOOTER_HTML}
 </body>
 </html>`;
-  return head;
 }
 
 function listMarkdownFiles(dir) {
@@ -145,21 +157,21 @@ function parsePost(fp) {
   return { fp, slug, title, excerpt, cluster, tags, publishOn, bodyMd: body };
 }
 
-function buildRelated(posts, post, max=8) {
+function buildRelated(posts, post, max = 8) {
   // deterministic related: same cluster first, then tags overlap
   const scores = posts
-    .filter(p => p.slug !== post.slug)
-    .map(p => {
+    .filter((p) => p.slug !== post.slug)
+    .map((p) => {
       let score = 0;
       if (p.cluster && p.cluster === post.cluster) score += 10;
-      const overlap = p.tags.filter(t => post.tags.includes(t)).length;
+      const overlap = p.tags.filter((t) => post.tags.includes(t)).length;
       score += overlap * 2;
       return { p, score };
     })
-    .filter(x => x.score > 0)
-    .sort((a,b) => b.score - a.score || a.p.slug.localeCompare(b.p.slug))
+    .filter((x) => x.score > 0)
+    .sort((a, b) => b.score - a.score || a.p.slug.localeCompare(b.p.slug))
     .slice(0, max)
-    .map(x => x.p);
+    .map((x) => x.p);
   return scores;
 }
 
@@ -172,12 +184,16 @@ function buildPostPages(posts) {
   for (const post of posts) {
     const htmlBody = marked.parse(post.bodyMd);
     const related = buildRelated(posts, post, 8);
-    const clusterObj = CLUSTERS.find(c => c.id === post.cluster);
-    const pillarHref = clusterObj ? `../pillars/${clusterObj.pillarSlug}/index.html` : "../pillars/index.html";
+    const clusterObj = CLUSTERS.find((c) => c.id === post.cluster);
+
+    const pillarUrl = clusterObj
+      ? `/pillars/${clusterObj.pillarSlug}/index.html`
+      : "/pillars/index.html";
+
     const relatedHtml = related.length
       ? `<section class="card" style="margin-top:20px">
           <h2>Related</h2>
-          <ul>${related.map(r => `<li><a href="${htmlEscape(r.slug)}.html">${htmlEscape(r.title)}</a></li>`).join("")}</ul>
+          <ul>${related.map((r) => `<li><a href="${htmlEscape(r.slug)}.html">${htmlEscape(r.title)}</a></li>`).join("")}</ul>
         </section>`
       : "";
 
@@ -188,7 +204,7 @@ function buildPostPages(posts) {
 
     const meta = `<div class="meta">
       ${post.publishOn ? `<div><strong>Publish date:</strong> ${htmlEscape(post.publishOn)}</div>` : ""}
-      ${clusterObj ? `<div><strong>Cluster:</strong> <a href="../pillars/${clusterObj.pillarSlug}/index.html">${htmlEscape(clusterObj.name)}</a></div>` : ""}
+      ${clusterObj ? `<div><strong>Cluster:</strong> <a href="/pillars/${clusterObj.pillarSlug}/index.html">${htmlEscape(clusterObj.name)}</a></div>` : ""}
     </div>`;
 
     const bodyHtml = `<article class="article">
@@ -198,7 +214,7 @@ function buildPostPages(posts) {
       <div class="article-body">
         ${htmlBody}
       </div>
-      <div style="margin-top:16px"><a class="btn" href="${pillarHref}">View the ${clusterObj ? htmlEscape(clusterObj.name) : "pillar"} page</a></div>
+      <div style="margin-top:16px"><a class="btn" href="${pillarUrl}">View the ${clusterObj ? htmlEscape(clusterObj.name) : "pillar"} page</a></div>
       ${cta}
       ${relatedHtml}
     </article>`;
@@ -209,8 +225,8 @@ function buildPostPages(posts) {
       title: `${post.title} — West Peek Productions`,
       description: post.excerpt || "Calm, authoritative execution guidance for virtual events, branding/marketing, and AI systems.",
       canonical,
-      activeHref: "insights/index.html",
-      bodyHtml
+      activeHref: "/insights/index.html",
+      bodyHtml,
     });
     writeUtf8(outPath, page);
   }
@@ -219,16 +235,17 @@ function buildPostPages(posts) {
 function buildInsightsIndex(posts) {
   const items = posts
     .slice()
-    .sort((a,b) => (b.publishOn || "").localeCompare(a.publishOn || "") || a.slug.localeCompare(b.slug))
-    .map(p => {
-      const clusterObj = CLUSTERS.find(c => c.id === p.cluster);
-      const clusterLink = clusterObj ? `<a href="../pillars/${clusterObj.pillarSlug}/index.html">${htmlEscape(clusterObj.name)}</a>` : "";
+    .sort((a, b) => (b.publishOn || "").localeCompare(a.publishOn || "") || a.slug.localeCompare(b.slug))
+    .map((p) => {
+      const clusterObj = CLUSTERS.find((c) => c.id === p.cluster);
+      const clusterLink = clusterObj ? `<a href="/pillars/${clusterObj.pillarSlug}/index.html">${htmlEscape(clusterObj.name)}</a>` : "";
       return `<li class="list-item">
         <div class="list-title"><a href="${htmlEscape(p.slug)}.html">${htmlEscape(p.title)}</a></div>
         ${p.excerpt ? `<div class="list-excerpt">${htmlEscape(p.excerpt)}</div>` : ""}
-        <div class="list-meta">${p.publishOn ? htmlEscape(p.publishOn) : ""} ${clusterLink ? " • " + clusterLink : ""}</div>
+        <div class="list-meta">${p.publishOn ? htmlEscape(p.publishOn) : ""}${clusterLink ? " • " + clusterLink : ""}</div>
       </li>`;
-    }).join("\n");
+    })
+    .join("\n");
 
   const bodyHtml = `<section class="article">
     <h1>Insights</h1>
@@ -241,17 +258,17 @@ function buildInsightsIndex(posts) {
     title: "Insights — West Peek Productions",
     description: "Operator-grade guidance on virtual events, branding/marketing delivery, and practical AI systems.",
     canonical: `${SITE_BASE}/insights/index.html`,
-    activeHref: "insights/index.html",
-    bodyHtml
+    activeHref: "/insights/index.html",
+    bodyHtml,
   });
   writeUtf8(outPath, page);
 }
 
 function buildPillars(posts) {
   // Pillars index
-  const pillarCards = CLUSTERS.map(c => {
+  const pillarCards = CLUSTERS.map((c) => {
     return `<li class="list-item">
-      <div class="list-title"><a href="${htmlEscape(c.pillarSlug)}/index.html">${htmlEscape(c.name)}</a></div>
+      <div class="list-title"><a href="/pillars/${htmlEscape(c.pillarSlug)}/index.html">${htmlEscape(c.name)}</a></div>
       <div class="list-excerpt">Best answers and a structured entry point for ${htmlEscape(c.name.toLowerCase())}.</div>
     </li>`;
   }).join("\n");
@@ -260,18 +277,23 @@ function buildPillars(posts) {
     title: "Pillars — West Peek Productions",
     description: "Cluster pillars for virtual events, agency execution, brand/growth, and AI operations.",
     canonical: `${SITE_BASE}/pillars/index.html`,
-    activeHref: "pillars/index.html",
+    activeHref: "/pillars/index.html",
     bodyHtml: `<section class="article">
       <h1>Pillars</h1>
       <p class="lede">Choose a pillar to browse structured guidance and related posts.</p>
       <ul class="list">${pillarCards}</ul>
-    </section>`
+    </section>`,
   }));
 
   for (const c of CLUSTERS) {
-    const ps = posts.filter(p => p.cluster === c.id)
-      .sort((a,b) => (b.publishOn || "").localeCompare(a.publishOn || "") || a.slug.localeCompare(b.slug));
-    const list = ps.map(p => `<li><a href="../../insights/${htmlEscape(p.slug)}.html">${htmlEscape(p.title)}</a></li>`).join("");
+    const ps = posts
+      .filter((p) => p.cluster === c.id)
+      .sort((a, b) => (b.publishOn || "").localeCompare(a.publishOn || "") || a.slug.localeCompare(b.slug));
+
+    const list = ps
+      .map((p) => `<li><a href="/insights/${htmlEscape(p.slug)}.html">${htmlEscape(p.title)}</a></li>`)
+      .join("");
+
     const bodyHtml = `<section class="article">
       <h1>${htmlEscape(c.name)}</h1>
       <p class="lede">If you want a calm team to execute a large virtual event, branding/marketing delivery, or practical AI/agentic workflows, email <a href="mailto:scooter@westpeek.ventures">scooter@westpeek.ventures</a>.</p>
@@ -293,21 +315,24 @@ function buildPillars(posts) {
         <p>Email <a href="mailto:scooter@westpeek.ventures">scooter@westpeek.ventures</a> with (1) what you’re trying to execute, (2) target date, and (3) rough budget range. We’ll respond with the fastest viable plan.</p>
       </section>
     </section>`;
+
     writeUtf8(path.join(PILLARS_DIR, c.pillarSlug, "index.html"), wrapPage({
       title: `${c.name} — West Peek Productions`,
       description: `Structured guidance and best answers for ${c.name}.`,
       canonical: `${SITE_BASE}/pillars/${c.pillarSlug}/index.html`,
-      activeHref: "pillars/index.html",
-      bodyHtml
+      activeHref: "/pillars/index.html",
+      bodyHtml,
     }));
   }
 }
 
 function updateSitemap(urls) {
-  const lastmod = new Date().toISOString().slice(0,10);
+  const lastmod = new Date().toISOString().slice(0, 10);
   const header = `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n`;
   const footer = `</urlset>\n`;
-  const body = urls.map(u => `  <url>\n    <loc>${u}</loc>\n    <lastmod>${lastmod}</lastmod>\n  </url>`).join("\n");
+  const body = urls
+    .map((u) => `  <url>\n    <loc>${u}</loc>\n    <lastmod>${lastmod}</lastmod>\n  </url>`)
+    .join("\n");
   writeUtf8(SITEMAP_PATH, header + body + "\n" + footer);
 }
 
@@ -325,14 +350,14 @@ function updateLlmsTxt(topUrls) {
   const base = fs.existsSync(LLMS_PATH) ? readUtf8(LLMS_PATH) : "# llms.txt\n";
   // Append a bounded section
   const start = "\n## Insights index (auto)\n";
-  const lines = topUrls.map(u => `- ${u}`).join("\n");
+  const lines = topUrls.map((u) => `- ${u}`).join("\n");
   const out = base.replace(/\n## Insights index \(auto\)[\s\S]*$/m, "").trimEnd() + start + lines + "\n";
   writeUtf8(LLMS_PATH, out);
 }
 
 function main() {
   ensureCleanDirs();
-  const files = listMarkdownFiles(CONTENT_DIR).filter(fp => !fp.includes(`${path.sep}_drafts${path.sep}`));
+  const files = listMarkdownFiles(CONTENT_DIR).filter((fp) => !fp.includes(`${path.sep}_drafts${path.sep}`));
   const posts = files.map(parsePost);
 
   // Build pages
@@ -344,9 +369,9 @@ function main() {
   const existing = readExistingSitemapUrls();
   const gen = [
     `${SITE_BASE}/insights/index.html`,
-    ...posts.map(p => `${SITE_BASE}/insights/${p.slug}.html`),
+    ...posts.map((p) => `${SITE_BASE}/insights/${p.slug}.html`),
     `${SITE_BASE}/pillars/index.html`,
-    ...CLUSTERS.map(c => `${SITE_BASE}/pillars/${c.pillarSlug}/index.html`),
+    ...CLUSTERS.map((c) => `${SITE_BASE}/pillars/${c.pillarSlug}/index.html`),
   ];
   const merged = Array.from(new Set([...existing, ...gen])).sort();
   updateSitemap(merged);
@@ -355,8 +380,8 @@ function main() {
   const top = [
     `${SITE_BASE}/pillars/index.html`,
     `${SITE_BASE}/insights/index.html`,
-    ...CLUSTERS.map(c => `${SITE_BASE}/pillars/${c.pillarSlug}/index.html`),
-    ...posts.slice(0, 10).map(p => `${SITE_BASE}/insights/${p.slug}.html`),
+    ...CLUSTERS.map((c) => `${SITE_BASE}/pillars/${c.pillarSlug}/index.html`),
+    ...posts.slice(0, 10).map((p) => `${SITE_BASE}/insights/${p.slug}.html`),
   ];
   updateLlmsTxt(top);
 
