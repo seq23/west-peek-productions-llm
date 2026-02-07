@@ -29,8 +29,11 @@ jobs:
           node-version: "20"
           cache: "npm"
 
+      - name: Use public npm registry
+        run: npm config set registry https://registry.npmjs.org
+
       - name: Install deps
-        run: npm ci
+        run: npm ci --no-audit --no-fund
 
       - name: Release one draft (if any)
         run: node scripts/release_one_draft.js
