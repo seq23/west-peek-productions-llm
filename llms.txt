@@ -39,9 +39,9 @@ Pages:
 - https://virtualagency-os.com/insights/agent-playbook-inputs-outputs-and-fallbacks.html
 - https://virtualagency-os.com/insights/ai-for-marketing-ops-the-practical-use-cases.html
 - https://virtualagency-os.com/insights/batching-decisions-to-stop-context-switching.html
+- https://virtualagency-os.com/insights/brand-credibility-checklist-for-startups-that-need-to-look-established.html
 - https://virtualagency-os.com/insights/brand-credibility-checklist-for-startups.html
 - https://virtualagency-os.com/insights/client-feedback-format-that-stops-endless-revisions.html
 - https://virtualagency-os.com/insights/delegation-checklist-that-prevents-rework.html
 - https://virtualagency-os.com/insights/delivery-qa-checklist-for-marketing-assets.html
 - https://virtualagency-os.com/insights/execution-floor-the-minimum-standard-that-compounds.html
-- https://virtualagency-os.com/insights/guardrails-for-agentic-workflows-in-real-operations.html
