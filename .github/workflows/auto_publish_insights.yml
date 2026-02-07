@@ -1,0 +1,51 @@
+name: Publish one Insight daily
+
+on:
+  schedule:
+    # 7:10am America/Chicago is 13:10 UTC during standard time
+    - cron: "10 13 * * *"
+  workflow_dispatch: {}
+
+permissions:
+  contents: write
+
+concurrency:
+  group: publish-insight-daily
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "npm"
+
+      - name: Install deps
+        run: npm ci
+
+      - name: Release one draft (if any)
+        run: node scripts/release_one_draft.js
+
+      - name: Build insights + sitemap + llms
+        run: node scripts/build_insights.js
+
+      - name: Commit & push if changed
+        run: |
+          if [[ -n "$(git status --porcelain)" ]]; then
+            git config user.name "github-actions[bot]"
+            git config user.email "github-actions[bot]@users.noreply.github.com"
+            git add -A
+            git commit -m "Publish daily insight"
+            git push
+          else
+            echo "No changes to commit."
+          fi
