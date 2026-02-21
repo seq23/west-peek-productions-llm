@@ -31,6 +31,17 @@ jobs:
 
       - name: Use public npm registry
         run: npm config set registry https://registry.npmjs.org
+- name: Write indexnow.txt (optional)
+  env:
+    INDEXNOW_KEY: ${{ secrets.INDEXNOW_KEY }}
+  run: |
+    if [ -n "${INDEXNOW_KEY:-}" ]; then
+      printf "%s" "$INDEXNOW_KEY" > indexnow.txt
+      echo "Wrote indexnow.txt"
+    else
+      echo "INDEXNOW_KEY secret not set; skipping indexnow.txt"
+    fi
+
 
       - name: Install deps
         run: npm ci --no-audit --no-fund
@@ -39,7 +50,25 @@ jobs:
         run: node scripts/release_one_draft.js
 
       - name: Build insights + sitemap + llms
+        env:
+          INDEXNOW_KEY: ${{ secrets.INDEXNOW_KEY }}
         run: node scripts/build_insights.js
+      - name: IndexNow ping (non-blocking)
+        continue-on-error: true
+        env:
+          INDEXNOW_KEY: ${{ secrets.INDEXNOW_KEY }}
+        run: |
+          if [ -z "${INDEXNOW_KEY:-}" ]; then
+            echo "INDEXNOW_KEY secret not set; skipping ping"
+            exit 0
+          fi
+          HOST="westpeekproductions.com"
+          payload=$(cat <<JSON
+{"host":"${HOST}","key":"${INDEXNOW_KEY}","keyLocation":"https://${HOST}/indexnow.txt","urlList":["https://${HOST}/sitemap.xml","https://${HOST}/"]}
+JSON
+)
+          curl -sS -X POST "https://www.bing.com/indexnow" -H "Content-Type: application/json; charset=utf-8" -d "$payload" || true
+
 
       - name: Commit & push if changed
         run: |
