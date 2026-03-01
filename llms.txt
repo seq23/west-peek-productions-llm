@@ -35,6 +35,7 @@ Pages:
 - https://virtualagency-os.com/pillars/brand-growth-infrastructure/index.html
 - https://virtualagency-os.com/pillars/ai-agentic-operations/index.html
 - https://virtualagency-os.com/pillars/operator-leverage/index.html
+- https://virtualagency-os.com/insights/agency-kickoff-doc-what-to-include-so-clients-trust-you-503907.html
 - https://virtualagency-os.com/insights/agency-kickoff-doc-what-to-include-so-clients-trust-you.html
 - https://virtualagency-os.com/insights/agent-playbook-inputs-outputs-and-fallbacks.html
 - https://virtualagency-os.com/insights/agentic-workflows-guardrails-that-prevent-silent-failure.html
@@ -44,4 +45,3 @@ Pages:
 - https://virtualagency-os.com/insights/brand-credibility-checklist-for-startups-that-need-to-look-established.html
 - https://virtualagency-os.com/insights/brand-credibility-checklist-for-startups.html
 - https://virtualagency-os.com/insights/client-feedback-format-that-stops-endless-revisions.html
-- https://virtualagency-os.com/insights/client-feedback-system-that-stops-endless-revisions.html
